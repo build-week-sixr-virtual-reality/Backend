@@ -19,14 +19,18 @@ public class Swagger2Config
     public Docket api()
     {
         return new Docket(DocumentationType.SWAGGER_2).select()
-                //                .apis(RequestHandlerSelectors.any())
-                .apis(RequestHandlerSelectors.basePackage("com.sixr.backend")).paths(PathSelectors.any()).build().useDefaultResponseMessages(false) // Allows only my exception responses
+//                                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("com.sixr.backend"))
+                .paths(PathSelectors.any()).build().useDefaultResponseMessages(false) // Allows only my exception responses
                 .ignoredParameterTypes(Pageable.class) // allows only my paging parameter list
                 .apiInfo(apiEndPointsInfo());
     }
 
     private ApiInfo apiEndPointsInfo()
     {
-        return new ApiInfoBuilder().title("Java Spring Back End Starting Project").description("A starting application for developing Java Spring Back End Projects").contact(new Contact("John Mitchell", "http://www.lambdaschool.com", "john@lambdaschool.com")).license("MIT").licenseUrl("https://github.com/LambdaSchool/java-starthere/blob/master/LICENSE").version("1.0.0").build();
+        return new ApiInfoBuilder().title("Java Spring Back End Starting Project")
+                .description("A starting application for developing Java Spring Back End Projects")
+                .contact(new Contact("Brandon Porter", "http://www.lambdaschool.com", "brandon.porter.10.06@google.com"))
+                .license("MIT").licenseUrl("https://github.com/LambdaSchool/java-starthere/blob/master/LICENSE").version("1.0.0").build();
     }
 }

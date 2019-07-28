@@ -1,7 +1,12 @@
 package com.sixr.backend.controllers;
 
+import com.sixr.backend.models.ErrorDetail;
 import com.sixr.backend.models.User;
 import com.sixr.backend.services.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +35,7 @@ public class UserController
     @Autowired
     private UserService userService;
 
+    @ApiOperation(value = "lists all users",notes = "requires admin login", responseContainer = "List")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/all",
                 produces = {"application/json"})
@@ -41,7 +47,10 @@ public class UserController
         return new ResponseEntity<>(myUsers, HttpStatus.OK);
     }
 
-
+    @ApiOperation(value = "returns user by id", responseContainer = "List", notes = "Requires Admin Login")
+    @ApiResponses(value = {
+            @ApiResponse(code=404,message="User Not Found", response = ErrorDetail.class)
+    })
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/{userId}",
                 produces = {"application/json"})
@@ -56,6 +65,7 @@ public class UserController
     }
 
 
+    @ApiOperation(value = "get's username",response = String.class)
     @GetMapping(value = "/getusername",
                 produces = {"application/json"})
     @ResponseBody
@@ -66,7 +76,7 @@ public class UserController
         return new ResponseEntity<>(authentication.getPrincipal(), HttpStatus.OK);
     }
 
-
+    @ApiOperation(value = "Add New User as Admin", response = void.class,notes = "Requires admin login, use /createnewuser for signup")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(value = "",
                  consumes = {"application/json"},
@@ -88,6 +98,10 @@ public class UserController
     }
 
 
+    @ApiOperation(value = "Updates a user by userid",response = void.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 404,message="User Not Found", response = ErrorDetail.class)
+    })
     @PutMapping(value = "/{id}")
     public ResponseEntity<?> updateUser(HttpServletRequest request,
                                         @RequestBody
@@ -101,7 +115,7 @@ public class UserController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
+    @ApiOperation(value = "Delete user by id", notes = "Requires Admin access", response = void.class)
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(HttpServletRequest request,
@@ -114,12 +128,14 @@ public class UserController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get your records", response = User.class)
     @GetMapping(value = "/self",
                 produces = {"application/json"})
     public ResponseEntity<?> getSelf(){
         return new ResponseEntity<>(userService.self(),HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Change your user type to {type}",notes = "{type} is treated as a string. Returns updated user", response = User.class)
     @PutMapping(value = "/type/{type}",
                 produces = {"application/json"})
     public ResponseEntity<?> changeUserType(@PathVariable String type){
@@ -129,6 +145,7 @@ public class UserController
         return new ResponseEntity<>(self,HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get Mentors", responseContainer = "List")
     @GetMapping(value = "/mentors",
                         produces = {"application/json"})
     public ResponseEntity<?> getMentors(){
