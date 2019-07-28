@@ -28,8 +28,8 @@ public class Swagger2Config
 
     private ApiInfo apiEndPointsInfo()
     {
-        return new ApiInfoBuilder().title("Java Spring Back End Starting Project")
-                .description("A starting application for developing Java Spring Back End Projects")
+        return new ApiInfoBuilder().title("Java Spring Back End Sixr")
+                .description("Java Spring Back End for Sixr Project")
                 .contact(new Contact("Brandon Porter", "http://www.lambdaschool.com", "brandon.porter.10.06@google.com"))
                 .license("MIT").licenseUrl("https://github.com/LambdaSchool/java-starthere/blob/master/LICENSE").version("1.0.0").build();
     }
