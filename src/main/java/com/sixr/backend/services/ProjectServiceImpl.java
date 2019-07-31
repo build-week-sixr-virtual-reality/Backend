@@ -4,8 +4,12 @@ import com.sixr.backend.exceptions.ResourceNotFoundException;
 import com.sixr.backend.models.Project;
 import com.sixr.backend.models.User;
 import com.sixr.backend.repository.ProjectRepository;
+import com.sixr.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +21,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectRepository projectRepo;
+
+    @Autowired
+    private UserRepository userrepos;
 
     @Override
     public List<Project> findAll() {
@@ -57,7 +64,17 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void delete(long id) {
         if(projectRepo.findById(id).isPresent()){
-            projectRepo.deleteById(id);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User currentUser = userrepos.findByUsername(authentication.getName());
+            Project project = projectRepo.findById(id).orElseThrow(()->new ResourceNotFoundException(Long.toString(id)));
+
+            if(currentUser.getUserid()==project.getOwner().getUserid() || SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                                                                                .contains(new SimpleGrantedAuthority("ROLE_ADMIN"))){
+                projectRepo.deleteById(id);
+            }
+            else{
+                throw new ResourceNotFoundException("Not Allowed");
+            }
         }else{
             throw new ResourceNotFoundException(Long.toString(id));
         }

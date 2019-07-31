@@ -2,6 +2,8 @@ package com.sixr.backend.controllers;
 
 import com.sixr.backend.models.ErrorDetail;
 import com.sixr.backend.models.User;
+import com.sixr.backend.models.UserRoles;
+import com.sixr.backend.services.RoleService;
 import com.sixr.backend.services.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +36,9 @@ public class UserController
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoleService roleService;
 
     @ApiOperation(value = "lists all users",notes = "requires admin login", responseContainer = "List")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -97,6 +102,19 @@ public class UserController
         return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }
 
+    @ApiOperation(value="Grant someone Authority",response = User.class,notes="Change someone to Authority {auth}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message="User not found", response = ErrorDetail.class),
+            @ApiResponse(code=500, message= "Internal Server Error", response = ErrorDetail.class)
+    })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PutMapping(value = "/grant/{auth}/{userid}")
+    public ResponseEntity<?> grantAuth(@PathVariable String auth, @PathVariable long userid){
+        User user = userService.findUserById(userid);
+        user.getUserRoles().add(new UserRoles(user,roleService.findByName(auth)));
+        user=userService.save(user);
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
 
     @ApiOperation(value = "Updates a user by userid",response = void.class)
     @ApiResponses(value = {

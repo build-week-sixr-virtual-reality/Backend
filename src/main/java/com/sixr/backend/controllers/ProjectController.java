@@ -12,6 +12,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -130,5 +131,18 @@ public class ProjectController {
         List<Project> res = projectService.findMine(user);
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Delete a Project by it's id", response = void.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 404,message = "Project Not Found", response = ErrorDetail.class),
+            @ApiResponse(code=500, message="Internal Server Error", response = void.class)
+    })
+    @DeleteMapping(value="/delete/{id}")
+    public ResponseEntity<?> deleteProject(@PathVariable long id){
+        projectService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 
 }

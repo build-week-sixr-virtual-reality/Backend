@@ -3,6 +3,7 @@ package com.sixr.backend.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name="projects")
@@ -16,8 +17,8 @@ public class Project extends Auditable{
 
     private long amount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = "projects")
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = {"hibernateLazyInitializer","projects"})
     private User owner;
 
     private String  email,
@@ -99,5 +100,25 @@ public class Project extends Auditable{
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return getProjectid() == project.getProjectid() &&
+                getAmount() == project.getAmount() &&
+                getName().equals(project.getName()) &&
+                getDescription().equals(project.getDescription()) &&
+                getOwner().equals(project.getOwner()) &&
+                Objects.equals(getEmail(), project.getEmail()) &&
+                Objects.equals(getPhone(), project.getPhone()) &&
+                Objects.equals(getStatus(), project.getStatus());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProjectid(), getName(), getDescription(), getAmount(), getOwner(), getEmail(), getPhone(), getStatus());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // User is considered the parent entity
 
@@ -35,7 +36,8 @@ public class User extends Auditable
     @OneToMany( mappedBy = "owner",
                 cascade = CascadeType.ALL,
                 orphanRemoval = true)
-    private List<Project> projects;
+    @JsonIgnoreProperties({"hibernateLazyInitializer","owner"})
+    private List<Project> projects = new ArrayList<>();
 
     private String type;
 
@@ -43,7 +45,7 @@ public class User extends Auditable
     {
     }
 
-    public User(String username, String password, List<UserRoles> userRoles)
+    public User(String username, String password, List<UserRoles> userRoles,List<Project> projects)
     {
         setUsername(username);
         setPassword(password);
@@ -52,6 +54,11 @@ public class User extends Auditable
             ur.setUser(this);
         }
         this.userRoles = userRoles;
+
+        for(Project p : projects){
+            p.setOwner(this);
+        }
+        this.projects=projects;
     }
 
     public long getUserid()
@@ -131,5 +138,18 @@ public class User extends Auditable
 
     public void addProject(Project p){
         projects.add(p);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return getUserid() == user.getUserid() &&
+                getUsername().equals(user.getUsername()) &&
+                getPassword().equals(user.getPassword()) &&
+                getUserRoles().equals(user.getUserRoles()) &&
+                Objects.equals(getProjects(), user.getProjects()) &&
+                Objects.equals(getType(), user.getType());
     }
 }
