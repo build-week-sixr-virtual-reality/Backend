@@ -47,6 +47,14 @@ public class RootController
         newuser.setUserRoles(newRoles);
 
         newuser.setType("user");
+        if(newuser.getLname()==null)
+            newuser.setLname("");
+        if(newuser.getFname()==null)
+            newuser.setFname("");
+        if(newuser.getEmail()==null)
+            newuser.setEmail("");
+        if(newuser.getPhone()==null)
+            newuser.setPhone("");
         newuser = userService.save(newuser);
 
         // set the location header for the newly created resource - to another controller!

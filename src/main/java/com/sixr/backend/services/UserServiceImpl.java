@@ -104,6 +104,19 @@ public class UserServiceImpl implements UserDetailsService, UserService
                     currentUser.setPasswordNoEncrypt(user.getPassword());
                 }
 
+                if(user.getEmail()!=null){
+                    currentUser.setEmail(user.getEmail());
+                }
+                if(user.getPhone()!=null){
+                    currentUser.setPhone(user.getPhone());
+                }
+                if(user.getFname()!=null){
+                    currentUser.setFname(user.getFname());
+                }
+                if(user.getLname()!=null){
+                    currentUser.setLname(user.getLname());
+                }
+
                 if(user.getProjects()!=null) {
 
                     for (Project p : user.getProjects()) {
